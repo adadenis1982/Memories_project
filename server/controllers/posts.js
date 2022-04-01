@@ -65,5 +65,25 @@ const deletePost = async (req, res) => {
   
 }
 
+const likePost = async (req, res) => {
+  const { id } = req.params;
 
-module.exports = { getPosts, createPost, updatePost, deletePost };
+  try {
+    const post = await postMessage.findOne({ where: { id: id } })
+
+    if (!post) return res.status(404).send(`Нет поста с таким id: ${id}`);
+    
+    await post.increment({ likeCount: 1 });
+
+    const updatedPost = await postMessage.findOne({ where: { id } })
+
+    res.json(updatedPost);
+
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+
+}
+
+
+module.exports = { getPosts, createPost, updatePost, deletePost, likePost };
