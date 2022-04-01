@@ -5,7 +5,7 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import MoreHorizIcon from '@material-ui/icons/MoreHoriz';
 import moment from 'moment';
 import { useDispatch } from 'react-redux';
-import { deletePost } from '../../../redux/actionCreators/postsAC';
+import { deletePost, likePost } from '../../../redux/actionCreators/postsAC';
 import useStyles from './styles';
 
 function Post({ post, setCurrentId }) {
@@ -17,7 +17,7 @@ function Post({ post, setCurrentId }) {
   <CardMedia className={classes.media} image={post.selectedFile} title={post.title} />
   <div className={classes.overlay}>
     <Typography variant="h6">{post.creator}</Typography>
-    <Typography variant="body2">{moment(post.createdAt).fromNow()}</Typography>
+    <Typography variant="body2">{moment(post.createdAt).fromNow().split('days ago').map(el => (el === '' ? 'дня назад' : el)).join('')}</Typography>
   </div>
   <div className={classes.overlay2}>
     <Button style={{ color: 'white' }} size="small" onClick={() => setCurrentId(post.id)}>
@@ -32,7 +32,7 @@ function Post({ post, setCurrentId }) {
     <Typography variant="body2" color="textSecondary" component="p">{post.message}</Typography>
   </CardContent>
   <CardActions className={classes.cardActions}>
-    <Button size="small" color="primary" onClick={() => {}}><ThumbUpAltIcon fontSize="small" />Лайк {post.likeCount} </Button>
+    <Button size="small" color="primary" onClick={() => dispatch(likePost(post.id))}><ThumbUpAltIcon fontSize="small" />&nbsp; Лайк &nbsp;{post.likeCount} </Button>
     <Button size="small" color="primary" onClick={() => dispatch(deletePost(post.id))}><DeleteIcon fontSize="small" />Удалить</Button>
   </CardActions>
 </Card>
