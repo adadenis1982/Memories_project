@@ -14,6 +14,9 @@ module.exports = {
       message: { 
         type: Sequelize.STRING 
       },
+      name: { 
+        type: Sequelize.STRING 
+      },
       creator: { 
         type: Sequelize.STRING 
       },
@@ -23,9 +26,9 @@ module.exports = {
       selectedFile: { 
         type: Sequelize.TEXT 
       },
-      likeCount: {
-        type: Sequelize.INTEGER,
-        defaultValue: 0,
+      likes: {
+        type: Sequelize.ARRAY(Sequelize.STRING),
+        defaultValue: []
       },
       createdAt: {
         allowNull: false,

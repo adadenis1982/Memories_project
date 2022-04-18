@@ -10,11 +10,11 @@ const getPosts = async (req, res) => {
 }
 
 const createPost = async (req, res) => {
-  const { title, message, selectedFile, creator, tags } = req.body;
+  const post = req.body;
 
   console.log(req.body);
   try {
-      const newPostMessage = await postMessage.create({ title, message, selectedFile, creator, tags })
+      const newPostMessage = await postMessage.create({ ...post, creator: req.userId, createdAt: new Date().toISOString()})
 
       res.status(201).json(newPostMessage);
   } catch (error) {
@@ -68,14 +68,28 @@ const deletePost = async (req, res) => {
 const likePost = async (req, res) => {
   const { id } = req.params;
 
+  console.log(id);
+
+  if(!req.userId) return res.json({ message: 'Вы не авторизированы' })
+
+  console.log(req.userId);
+
   try {
-    const post = await postMessage.findOne({ where: { id: id } })
+    const post = await postMessage.findOne({ where: { id }, raw: true });
 
     if (!post) return res.status(404).send(`Нет поста с таким id: ${id}`);
-    
-    await post.increment({ likeCount: 1 });
 
-    const updatedPost = await postMessage.findOne({ where: { id } })
+    const index = post.likes.findIndex((id) => id === String(req.userId));
+    
+    if(index === -1) {
+      post.likes.push(req.userId)
+    } else {
+      post.likes = post.likes.filter((id) => id !== String(req.userId))
+    }
+
+    await postMessage.update( { likes: post.likes }, { where: { id } });
+
+    const updatedPost = await postMessage.findOne({ where: { id }, raw: true });
 
     res.json(updatedPost);
 
@@ -84,6 +98,5 @@ const likePost = async (req, res) => {
   }
 
 }
-
 
 module.exports = { getPosts, createPost, updatePost, deletePost, likePost };

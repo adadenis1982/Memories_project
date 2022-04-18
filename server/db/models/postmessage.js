@@ -15,12 +15,13 @@ module.exports = (sequelize, DataTypes) => {
     {
       title: DataTypes.STRING,
       message: DataTypes.STRING,
+      name: DataTypes.STRING,
       creator: DataTypes.STRING,
       tags: DataTypes.ARRAY(DataTypes.STRING),
       selectedFile: DataTypes.TEXT,
-      likeCount: {
-        type: DataTypes.INTEGER,
-        defaultValue: 0,
+      likes:  {
+        type: DataTypes.ARRAY(DataTypes.STRING),
+        defaultValue: []
       },
     },
     {
