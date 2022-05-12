@@ -1,76 +1,111 @@
-const { postMessage } = require('../db/models')
+const { Op } = require('sequelize');
+const { postMessage } = require('../db/models');
 
 const getPosts = async (req, res) => {
+  const { page } = req.query;
+
   try {
-      const postMessages = await postMessage.findAll({ raw: true });      
-      res.status(200).json(postMessages);
+    const limitPost = 8;
+
+    const startIndex = (Number(page) - 1) * limitPost; // получить стартовый индекс для каждой страницы
+
+    const posts = await postMessage.findAll({
+      order: [
+          ['id', 'DESC'],
+        ],
+      offset: startIndex, 
+      limit: limitPost,
+      raw: true,
+    });
+
+    res.status(200).json({ data: posts, currentPage: Number(page), numberOfPages: Math.ceil(posts.length / limitPost)});
   } catch (error) {
-      res.status(404).json({ message: error.message });
+    res.status(404).json({ message: error.message });
   }
-}
+};
+
+const getPostsBySearch = async (req, res) => {
+  const { searchQuery, tags } = req.query;
+
+  try {
+    const post = await postMessage.findAll({
+      where: {
+        [Op.or]: [
+          { title: { [Op.iRegexp]: searchQuery } },
+          { tags: { [Op.contains]: tags.split(',') } },
+        ],
+      },
+      raw: true,
+    });
+
+    res.status(200).json(post);
+  } catch (error) {
+    res.status(404).json({ message: error.message });
+  }
+};
 
 const createPost = async (req, res) => {
   const post = req.body;
 
   console.log(req.body);
   try {
-      const newPostMessage = await postMessage.create({ ...post, creator: req.userId, createdAt: new Date().toISOString()})
+    const newPostMessage = await postMessage.create({
+      ...post,
+      creator: req.userId,
+      createdAt: new Date().toISOString(),
+    });
 
-      res.status(201).json(newPostMessage);
+    res.status(201).json(newPostMessage);
   } catch (error) {
-      res.status(409).json({ message: error.message });
+    res.status(409).json({ message: error.message });
   }
-}
+};
 
 const updatePost = async (req, res) => {
-
   const { id } = req.params;
 
   const { title, message, creator, selectedFile, tags } = req.body;
 
   try {
-   
-    const post = await postMessage.findOne({ where: { id: id } })
-  
+    const post = await postMessage.findOne({ where: { id: id } });
+
     if (!post) return res.status(404).send(`Нет поста с таким id: ${id}`);
 
-    await postMessage.update( { title, message, selectedFile, creator, tags},
+    await postMessage.update(
+      { title, message, selectedFile, creator, tags },
       { where: { id } }
     );
 
-    const updatedPost = await postMessage.findOne({ where: { id } })
+    const updatedPost = await postMessage.findOne({ where: { id } });
 
     res.json(updatedPost);
-
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
-}
+};
 
 const deletePost = async (req, res) => {
   const { id } = req.params;
 
   try {
-    const post = await postMessage.findOne({ where: { id: id } })
-  
+    const post = await postMessage.findOne({ where: { id: id } });
+
     if (!post) return res.status(404).send(`Нет поста с таким id: ${id}`);
 
     await postMessage.destroy({ where: { id: id } });
 
-    res.json({ message: "Пост успешно удален." });
-
+    res.json({ message: 'Пост успешно удален.' });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
-  
-}
+};
 
 const likePost = async (req, res) => {
   const { id } = req.params;
 
   console.log(id);
 
-  if(!req.userId) return res.json({ message: 'Вы не авторизированы' })
+  if (!req.userId) return res.json({ message: 'Вы не авторизированы' });
 
   console.log(req.userId);
 
@@ -80,23 +115,28 @@ const likePost = async (req, res) => {
     if (!post) return res.status(404).send(`Нет поста с таким id: ${id}`);
 
     const index = post.likes.findIndex((id) => id === String(req.userId));
-    
-    if(index === -1) {
-      post.likes.push(req.userId)
+
+    if (index === -1) {
+      post.likes.push(req.userId);
     } else {
-      post.likes = post.likes.filter((id) => id !== String(req.userId))
+      post.likes = post.likes.filter((id) => id !== String(req.userId));
     }
 
-    await postMessage.update( { likes: post.likes }, { where: { id } });
+    await postMessage.update({ likes: post.likes }, { where: { id } });
 
     const updatedPost = await postMessage.findOne({ where: { id }, raw: true });
 
     res.json(updatedPost);
-
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
+};
 
-}
-
-module.exports = { getPosts, createPost, updatePost, deletePost, likePost };
+module.exports = {
+  getPostsBySearch,
+  getPosts,
+  createPost,
+  updatePost,
+  deletePost,
+  likePost,
+};

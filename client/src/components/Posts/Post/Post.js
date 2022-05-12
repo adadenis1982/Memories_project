@@ -30,7 +30,7 @@ function Post({ post, setCurrentId }) {
           <ThumbUpAltIcon fontSize="small" />
           &nbsp;
           {post.likes.length > 2
-            ? `Ваши и ${post.likes.length - 1} другиx`
+            ? `Ваш и ${post.likes.length - 1} другиx`
             : `${post.likes.length} Лайк${
                 post.likes.length > 1 && post.likes.length < 4
                   ? 'а'
@@ -61,7 +61,7 @@ function Post({ post, setCurrentId }) {
   };
 
   return (
-    <Card className={classes.card}>
+    <Card className={classes.card} raised elevation={6}>
       <CardMedia
         className={classes.media}
         image={post.selectedFile}
