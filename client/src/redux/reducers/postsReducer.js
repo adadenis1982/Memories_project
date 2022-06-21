@@ -7,6 +7,7 @@ import {
   LIKE,
   START_LOADING,
   END_LOADING,
+  FETCH_POST,
 } from '../actionTypes/postsAT';
 
 export const postsReducer = (
@@ -27,6 +28,8 @@ export const postsReducer = (
       };
     case FETCH_BY_SEARCH:
       return { ...state, posts: action.payload };
+    case FETCH_POST:
+      return { ...state, post: action.payload };
     case CREATE:
       return { ...state, posts: [...state.posts, action.payload] };
     case UPDATE:

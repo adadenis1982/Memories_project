@@ -14,7 +14,7 @@ function Paginate({ page }) {
 
   useEffect(() => {
     if(page) dispatch(getPosts(page));
-  }, [page]);
+  }, [page, dispatch]);
 
   return (
     <Pagination classes={{ ul: classes.ul }} count={numberOfPages} page={Number(page) || 1} variant='outlined' color='primary' renderItem={(item) => (

@@ -1,6 +1,19 @@
 const { Op } = require('sequelize');
 const { postMessage } = require('../db/models');
 
+const getPost = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    
+    const post = await postMessage.findOne({ where: { id: id } });
+
+    res.status(200).json(post);
+  } catch (error) {
+    res.status(404).json({ message: error.message });
+  }
+};
+
 const getPosts = async (req, res) => {
   const { page } = req.query;
 
@@ -8,6 +21,8 @@ const getPosts = async (req, res) => {
     const limitPost = 8;
 
     const startIndex = (Number(page) - 1) * limitPost; // получить стартовый индекс для каждой страницы
+
+    const total = await postMessage.count();
 
     const posts = await postMessage.findAll({
       order: [
@@ -18,7 +33,7 @@ const getPosts = async (req, res) => {
       raw: true,
     });
 
-    res.status(200).json({ data: posts, currentPage: Number(page), numberOfPages: Math.ceil(posts.length / limitPost)});
+    res.status(200).json({ data: posts, currentPage: Number(page), numberOfPages: Math.ceil(total / limitPost)});
   } catch (error) {
     res.status(404).json({ message: error.message });
   }
@@ -28,11 +43,12 @@ const getPostsBySearch = async (req, res) => {
   const { searchQuery, tags } = req.query;
 
   try {
+
     const post = await postMessage.findAll({
       where: {
         [Op.or]: [
           { title: { [Op.iRegexp]: searchQuery } },
-          { tags: { [Op.contains]: tags.split(',') } },
+          { tags: { [Op.contains]: tags.toLowerCase().split(',') } },
         ],
       },
       raw: true,
@@ -139,4 +155,5 @@ module.exports = {
   updatePost,
   deletePost,
   likePost,
+  getPost
 };

@@ -10,6 +10,7 @@ const userRoutes = require('./routes/users');
 const app = express();
 const PORT = process.env.PORT ?? 4000;
 
+app.use(logger('dev'));
 app.use(bodyParser.json({ limit: '30mb', extended: true }))
 app.use(bodyParser.urlencoded({ limit: '30mb', extended: true }))
 app.use(cors());
