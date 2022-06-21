@@ -4,4 +4,4 @@
 
 Использовать npm i && npm start как для клиента, так и для сервера, чтобы запустить приложение.
 
-![Снимок экрана от 2022-05-12 18-43-12](https://user-images.githubusercontent.com/72496042/168116035-66595c1b-b5aa-456d-a09d-ed887011ce31.png)
+![Снимок экрана от 2022-06-21 19-09-38](https://user-images.githubusercontent.com/72496042/174847034-a3c037a3-bba2-4e99-ba49-e0b7faf0beee.png)
