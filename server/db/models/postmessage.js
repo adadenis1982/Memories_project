@@ -23,6 +23,10 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.ARRAY(DataTypes.STRING),
         defaultValue: []
       },
+      comments:  {
+        type: DataTypes.ARRAY(DataTypes.STRING),
+        defaultValue: []
+      },
     },
     {
       sequelize,

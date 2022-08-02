@@ -8,6 +8,7 @@ import {
   START_LOADING,
   END_LOADING,
   FETCH_POST,
+  COMMENT
 } from '../actionTypes/postsAT';
 
 export const postsReducer = (
@@ -45,6 +46,13 @@ export const postsReducer = (
         posts: state.posts.filter((post) => post.id !== action.payload),
       };
     case LIKE:
+      return {
+        ...state,
+        posts: state.posts.map((post) =>
+          post.id === action.payload.id ? action.payload : post
+        ),
+      };
+      case COMMENT:
       return {
         ...state,
         posts: state.posts.map((post) =>

@@ -63,7 +63,6 @@ const getPostsBySearch = async (req, res) => {
 const createPost = async (req, res) => {
   const post = req.body;
 
-  console.log(req.body);
   try {
     const newPostMessage = await postMessage.create({
       ...post,
@@ -119,11 +118,7 @@ const deletePost = async (req, res) => {
 const likePost = async (req, res) => {
   const { id } = req.params;
 
-  console.log(id);
-
   if (!req.userId) return res.json({ message: 'Вы не авторизированы' });
-
-  console.log(req.userId);
 
   try {
     const post = await postMessage.findOne({ where: { id }, raw: true });
@@ -148,6 +143,21 @@ const likePost = async (req, res) => {
   }
 };
 
+const commentPost = async(req, res) => {
+  const { id } = req.params;
+  const { value } = req.body;
+
+  const post = await postMessage.findOne({ where: { id }, raw: true });
+
+  post.comments.push(value);
+
+  await postMessage.update({ comments: post.comments }, { where: { id } });
+
+  const updatedPost = await postMessage.findOne({ where: { id }, raw: true });
+
+  res.json(updatedPost);
+};
+
 module.exports = {
   getPostsBySearch,
   getPosts,
@@ -155,5 +165,6 @@ module.exports = {
   updatePost,
   deletePost,
   likePost,
-  getPost
+  getPost,
+  commentPost
 };

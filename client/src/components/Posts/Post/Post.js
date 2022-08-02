@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Card,
   CardActions,
@@ -24,20 +24,33 @@ function Post({ post, setCurrentId }) {
   const navigate = useNavigate();
   const user = JSON.parse(localStorage.getItem('profile'));
 
+  const [likes, setLikes] = useState(post?.likes);
+
+  const userId = user?.result?.googleId || user?.result?.id;
+  const hasLikePost = likes.find((like) => like === userId);
+  
+  const handleLike = () => {
+    dispatch(likePost(post.id));
+
+    if(hasLikePost) {
+      setLikes(likes.filter((id) => id !== userId))
+    } else {
+      setLikes([...likes, userId])
+    }
+  }
+
   const Likes = () => {
-    if (post.likes.length > 0) {
-      return post.likes.find(
-        (like) => like === (user?.result?.googleId || user?.result?.id)
-      ) ? (
+    if (likes.length > 0) {
+      return likes.find(like => like === userId) ? (
         <>
           <ThumbUpAltIcon fontSize="small" />
           &nbsp;
-          {post.likes.length > 2
-            ? `Ваш и ${post.likes.length - 1} другиx`
-            : `${post.likes.length} Лайк${
-                post.likes.length > 1 && post.likes.length < 4
+          {likes.length > 2
+            ? `Ваш и ${likes.length - 1} другиx`
+            : `${likes.length} Лайк${
+                likes.length > 1 && likes.length < 4
                   ? 'а'
-                  : post.likes.length > 4
+                  : likes.length > 4
                   ? 'ов'
                   : ''
               }`}
@@ -45,10 +58,10 @@ function Post({ post, setCurrentId }) {
       ) : (
         <>
           <ThumbUpAltOutlined fontSize="small" />
-          &nbsp;{post.likes.length}{' '}
-          {post.likes.length === 1
+          &nbsp;{likes.length}{' '}
+          {likes.length === 1
             ? 'Лайк'
-            : post.likes.length > 1 && post.likes.length < 4
+            : likes.length > 1 && likes.length < 4
             ? 'Лайка'
             : 'Лайков'}
         </>
@@ -115,7 +128,7 @@ function Post({ post, setCurrentId }) {
           size="small"
           color="primary"
           disabled={!user?.result}
-          onClick={() => dispatch(likePost(post.id))}
+          onClick={handleLike}
         >
           <Likes />
         </Button>

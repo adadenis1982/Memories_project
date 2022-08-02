@@ -11,8 +11,8 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
 
 import useStyles from './styles';
-
-import { getPost } from '../../redux/actionCreators/postsAC'
+import CommentSection from './CommentSection';
+import { getPost, getPostsBySearch } from '../../redux/actionCreators/postsAC'
 
 function PostDetails() {
   
@@ -28,11 +28,12 @@ function PostDetails() {
     dispatch(getPost(id));
   }, [id, dispatch])
 
+  // Находит все посты с одинаковыми Тегами
   // useEffect(() => {
   //   if(post) {
   //     dispatch(getPostsBySearch({ search: 'none', tags: post?.tags.join(',') }))
   //   }
-  // }, [post])
+  // }, [post, dispatch])
   
   if(!post) return null;
 
@@ -75,9 +76,7 @@ function PostDetails() {
             <strong>Realtime Chat - coming soon!</strong>
           </Typography>
           <Divider style={{ margin: '20px 0' }} />
-          <Typography variant="body1">
-            <strong>Comments - coming soon!</strong>
-          </Typography>
+          <CommentSection post={post}/>
           <Divider style={{ margin: '20px 0' }} />
         </div>
         <div className={classes.imageSection}>
@@ -98,7 +97,7 @@ function PostDetails() {
           <div className={classes.recommendedPosts}>
             {recommendedPosts.map(({ title, message, name, likes, selectedFile, id}) => (
               <div key={uuidv4()} style={{ margin: '20px', cursor: 'pointer' }} onClick={() => openPost(id)}>
-                <Typography gutterBottom variant='6'>{title}</Typography>
+                <Typography gutterBottom variant='h6'>{title}</Typography>
                 <Typography gutterBottom variant='subtitle2'>{name}</Typography>
                 <Typography gutterBottom variant='subtitle2'>{message}</Typography>
                 <Typography gutterBottom variant='subtitle1'>Лайков: {likes.length}</Typography>
