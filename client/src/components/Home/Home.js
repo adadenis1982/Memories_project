@@ -31,6 +31,7 @@ function Home() {
   const navigate = useNavigate();
   const page = query.get('page') || 1;
   const searchQuery = query.get('searchQuery');
+
   const classes = useStyles();
 
   const [search, setSearch] = useState('');
