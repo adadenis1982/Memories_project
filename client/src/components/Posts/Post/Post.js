@@ -7,12 +7,14 @@ import {
   Button,
   Typography,
   ButtonBase,
+  ListItem
 } from '@material-ui/core/';
 import ThumbUpAltIcon from '@material-ui/icons/ThumbUpAlt';
 import ThumbUpAltOutlined from '@material-ui/icons/ThumbUpAlt';
 import DeleteIcon from '@material-ui/icons/Delete';
 import MoreHorizIcon from '@material-ui/icons/MoreHoriz';
 import moment from 'moment';
+import 'moment/locale/ru' 
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { deletePost, likePost } from '../../../redux/actionCreators/postsAC';
@@ -26,7 +28,7 @@ function Post({ post, setCurrentId }) {
 
   const [likes, setLikes] = useState(post?.likes);
 
-  const userId = user?.result?.googleId || user?.result?.id;
+  const userId = user?.result?.googleId || user?.result?.id.toString();
   const hasLikePost = likes.find((like) => like === userId);
   
   const handleLike = () => {
@@ -45,7 +47,7 @@ function Post({ post, setCurrentId }) {
         <>
           <ThumbUpAltIcon fontSize="small" />
           &nbsp;
-          {likes.length > 2
+          {likes.length > 1
             ? `Ваш и ${likes.length - 1} другиx`
             : `${likes.length} Лайк${
                 likes.length > 1 && likes.length < 4
@@ -78,9 +80,11 @@ function Post({ post, setCurrentId }) {
 
   const openPost = () => navigate(`/posts/${post.id}`);
 
+  moment.locale('ru')
+
   return (
     <Card className={classes.card} raised elevation={6}>
-      <ButtonBase className={classes.cardAction} onClick={openPost}>
+      <ButtonBase className={classes.cardAction} onDoubleClick={openPost}>
         <CardMedia
           className={classes.media}
           image={post.selectedFile}
@@ -93,15 +97,15 @@ function Post({ post, setCurrentId }) {
           </Typography>
         </div>
         {(user?.result?.googleId === post?.creator ||
-          user?.result?.id === post?.creator) && (
+          user?.result?.id === Number(post?.creator)) && (
           <div className={classes.overlay2}>
-            <Button
+            <ListItem
               style={{ color: 'white' }}
               size="small"
               onClick={() => setCurrentId(post.id)}
             >
               <MoreHorizIcon fontSize="medium" />
-            </Button>
+            </ListItem>
           </div>
         )}
         <div className={classes.details}>
@@ -133,7 +137,7 @@ function Post({ post, setCurrentId }) {
           <Likes />
         </Button>
         {(user?.result?.googleId === post?.creator ||
-          user?.result?.id === post?.creator) && (
+          user?.result?.id === Number(post?.creator)) && (
           <Button
             size="small"
             color="primary"

@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { Typography, TextField, Button, Divider } from '@material-ui/core';
+import { Typography, TextField, Button } from '@material-ui/core';
 import { useDispatch } from 'react-redux';
 import { v4 as uuidv4 } from 'uuid';
 

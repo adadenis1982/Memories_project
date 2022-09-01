@@ -44,7 +44,6 @@ function Auth() {
   };
 
   const handelChange = (event) => {
-    // console.log({[event.target.name]: event.target.value});
     setFromData({...formData, [event.target.name]: event.target.value});
   };
 

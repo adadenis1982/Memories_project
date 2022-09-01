@@ -7,6 +7,7 @@ import {
 } from '@material-ui/core/';
 import { useDispatch, useSelector } from 'react-redux';
 import moment from 'moment';
+import 'moment/locale/ru';
 import { useNavigate, useParams } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -29,11 +30,11 @@ function PostDetails() {
   }, [id, dispatch])
 
   // Находит все посты с одинаковыми Тегами
-  // useEffect(() => {
-  //   if(post) {
-  //     dispatch(getPostsBySearch({ search: 'none', tags: post?.tags.join(',') }))
-  //   }
-  // }, [post, dispatch])
+  useEffect(() => {
+    if(post) {
+      dispatch(getPostsBySearch({ search: 'none', tags: post?.tags.join(',') }))
+    }
+  }, [post, dispatch])
   
   if(!post) return null;
 
@@ -48,6 +49,8 @@ function PostDetails() {
   const openPost = (id) => {
     navigate(`/posts/${id}`)
   };
+
+  moment.locale('ru')
 
   return (
     <Paper style={{ padding: '20px', borderRadius: '15px' }} elevation={6}>
@@ -67,13 +70,13 @@ function PostDetails() {
           <Typography gutterBottom variant="body1" component="p">
             {post.message}
           </Typography>
-          <Typography variant="h6">Created by: {post.name}</Typography>
+          <Typography variant="h6">Автор: {post.name}</Typography>
           <Typography variant="body1">
             {moment(post.createdAt).fromNow()}
           </Typography>
           <Divider style={{ margin: '20px 0' }} />
           <Typography variant="body1">
-            <strong>Realtime Chat - coming soon!</strong>
+            <strong>Чат - очень скоро!</strong>
           </Typography>
           <Divider style={{ margin: '20px 0' }} />
           <CommentSection post={post}/>
@@ -93,7 +96,7 @@ function PostDetails() {
       { recommendedPosts.length && (
         <div className={classes.section}>
           <Typography gutterBottom variant='h5'>Вам также может понравиться:</Typography>
-          <Divider />
+          <Divider style={{ margin: '20px 0' }} />
           <div className={classes.recommendedPosts}>
             {recommendedPosts.map(({ title, message, name, likes, selectedFile, id}) => (
               <div key={uuidv4()} style={{ margin: '20px', cursor: 'pointer' }} onClick={() => openPost(id)}>
@@ -101,7 +104,7 @@ function PostDetails() {
                 <Typography gutterBottom variant='subtitle2'>{name}</Typography>
                 <Typography gutterBottom variant='subtitle2'>{message}</Typography>
                 <Typography gutterBottom variant='subtitle1'>Лайков: {likes.length}</Typography>
-                <img src={selectedFile} width='200px'/>
+                <img src={selectedFile} width='200px' alt=""/>
               </div>
             ))}
           </div>
